@@ -134,36 +134,55 @@ function toggleMusic() {
                         }
                     } catch (e) { console.warn('Gagal embed audio:', e); audioDataUrl = audio ? (audio.currentSrc || audio.src) : ''; }
 
-                    // Build standalone HTML: inline CSS + body + JS that restores photos + inline script.js
+                    // Build standalone HTML: inline CSS + body + JS that restores photos + inline small player init
+                    const bodyHtmlRaw = getCurrentPageHTML();
+
+                    // If we have embedded audio, replace the <audio> element source in the body HTML
+                    let bodyHtml = bodyHtmlRaw;
+                    if (audioDataUrl) {
+                        // replace existing <audio ...>...</audio> with a version that has embedded src
+                        bodyHtml = bodyHtml.replace(/<audio[\s\S]*?<\/audio>/i, `<audio id="bgMusic" preload="auto" controls>\n            <source src="${audioDataUrl}" type="audio/mpeg">\n            Browser Anda tidak mendukung audio element.\n        </audio>`);
+                    }
+
+                    // minimal restore script: restore photos & init simple player controls so exported file works offline
                     const restoreScript = `
-                        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiFotos)};
-                        const EMBEDDED_AUDIO = ${JSON.stringify(audioDataUrl)};
-                        window.addEventListener('DOMContentLoaded', () => {
-                            try {
-                                Object.keys(DEKLARASI_PHOTOS).forEach(key => {
+                        (function(){
+                            const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiFotos)};
+                            try{
+                                Object.keys(DEKLARASI_PHOTOS).forEach(key=>{
                                     const index = parseInt(key);
                                     const photoData = DEKLARASI_PHOTOS[key];
-                                    try { localStorage.setItem('loveDeclaration_photo_' + index, photoData); } catch(e){}
+                                    try{ localStorage.setItem('loveDeclaration_photo_'+index, photoData); }catch(e){}
                                     const placeholder = document.querySelectorAll('.photo-placeholder')[index];
-                                    if (placeholder) {
-                                        placeholder.style.backgroundImage = 'url("' + photoData + '")';
+                                    if(placeholder){
+                                        placeholder.style.backgroundImage = 'url("'+photoData+'")';
                                         placeholder.style.backgroundSize = 'cover';
                                         placeholder.style.backgroundPosition = 'center';
                                         placeholder.innerHTML = '';
                                     }
                                 });
-                            } catch(e) { console.warn('Error restore photos:', e); }
-                            try {
-                                if (EMBEDDED_AUDIO) {
-                                    const audioEl = document.getElementById('bgMusic');
-                                    if (audioEl) {
-                                        audioEl.src = EMBEDDED_AUDIO;
-                                        audioEl.muted = true;
-                                        audioEl.play().then(()=>{ setTimeout(()=>{ audioEl.muted = false; }, 800); }).catch(()=>{});
-                                    }
+                            }catch(e){console.warn('Error restore photos',e)}
+
+                            // init player controls
+                            try{
+                                const audioEl = document.getElementById('bgMusic');
+                                const playBtn = document.getElementById('playBtn');
+                                const volumeSlider = document.getElementById('volumeSlider');
+                                if(volumeSlider && audioEl){
+                                    volumeSlider.addEventListener('input', function(e){
+                                        audioEl.muted = false;
+                                        audioEl.volume = e.target.value/100;
+                                        if(audioEl.paused) audioEl.play().catch(()=>{});
+                                    });
                                 }
-                            } catch(e) { console.warn('Error set audio:', e); }
-                        });
+                                if(playBtn && audioEl){
+                                    playBtn.addEventListener('click', function(){
+                                        if(audioEl.paused){ audioEl.play().catch(()=>{}); playBtn.innerHTML='<span class="play-icon">⏸</span>'; }
+                                        else { audioEl.pause(); playBtn.innerHTML='<span class="play-icon">▶</span>'; }
+                                    });
+                                }
+                            }catch(e){console.warn('Error init player',e)}
+                        })();
                     `;
 
                     const htmlContent = `<!doctype html>
@@ -175,7 +194,7 @@ function toggleMusic() {
                 <style>${cssText}</style>
                 </head>
                 <body>
-                ${getCurrentPageHTML()}
+                ${bodyHtml}
                 <script>${restoreScript}</script>
                 ${scriptText ? `<script>${scriptText}</script>` : ''}
                 </body>
