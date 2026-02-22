@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pernyataan Cinta Untukmu ❤️</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background dengan animasi hati -->
+    <div class="heart-background"></div>
+
+    <!-- Header/Judul -->
+    <header class="header">
+        <h1 class="title">Pernyataan Cintaku Untukmu 💕</h1>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Welcome Section -->
+        <section class="section welcome-section">
+            <div class="welcome-content">
+                <h2>Halo Sayang 💕</h2>
+                <p>Ada sesuatu yang ingin aku sampaikan kepadamu...</p>
+                <button class="btn btn-primary" onclick="scrollToSection('declaration')">Lanjutkan →</button>
+            </div>
+        </section>
+
+        <!-- Declaration Section -->
+        <section class="section declaration-section" id="declaration">
+            <div class="declaration-content">
+                <h2>Pernyataanku</h2>
+                <div class="declaration-text">
+                    <p>Sejak aku mengenalmu, hidupku menjadi lebih berwarna.</p>
+                    <p>Setiap hari denganmu adalah hadiah terindah.</p>
+                    <br>
+                    <p class="highlight">👼 Aku mencintaimu lebih dari apapun di dunia ini 👼</p>
+                    <br>
+                    <p>Terima kasih telah menjadi bagian dari hidupku.</p>
+                </div>
+                <button class="btn btn-primary" onclick="scrollToSection('gallery')">Lihat Kenangan Kita ↓</button>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="section gallery-section" id="gallery">
+            <h2>Kenangan Indah Kita</h2>
+            <div class="gallery-container">
+                <div class="gallery-item">
+                    <div class="photo-placeholder">
+                        <span>📸 Foto 1</span>
+                    </div>
+                    <p>Momen spesial bersama</p>
+                </div>
+                <div class="gallery-item">
+                    <div class="photo-placeholder">
+                        <span>📸 Foto 2</span>
+                    </div>
+                    <p>Tawa dan kebahagiaan</p>
+                </div>
+                <div class="gallery-item">
+                    <div class="photo-placeholder">
+                        <span>📸 Foto 3</span>
+                    </div>
+                    <p>Cinta sejati</p>
+                </div>
+                <div class="gallery-item">
+                    <div class="photo-placeholder">
+                        <span>📸 Foto 4</span>
+                    </div>
+                    <p>Selamanya bersamamu</p>
+                </div>
+            </div>
+            <p class="gallery-note">💡 Ubah placeholder dengan foto-fotomu yang indah</p>
+            <button class="btn btn-primary" onclick="scrollToSection('poetry')">Dengarkan Pesan Cintaku ↓</button>
+        </section>
+
+        <!-- Poetry Section -->
+        <section class="section poetry-section" id="poetry">
+            <h2>Puisi Untukmu ✨</h2>
+            <div class="poetry-container">
+                <div class="poetry-box animate-fade-in">
+                    <p class="poetry-title">~ Cinta Sejati ~</p>
+                    <p class="poetry-text">
+                        Dalam setiap langkah hidupku<br>
+                        Bayangmu selalu di depanku<br>
+                        <br>
+                        Mata indahmu seperti bintang malam<br>
+                        Senyuman manismu seperti musim semi<br>
+                        <br>
+                        Tangan hangat tanganmu<br>
+                        Membuat dunia terasa lebih nyaman<br>
+                        <br>
+                        Cintaku untukmu tak terbatas<br>
+                        Melampaui waktu dan ruang<br>
+                        <br>
+                        Terima kasih telah ada<br>
+                        Dalam setiap momen hidupku 💕
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="scrollToSection('music')">Dengarkan Musik Cinta ↓</button>
+        </section>
+
+        <!-- Music Section -->
+        <section class="section music-section" id="music">
+            <h2>Musik Romantis untuk Kita 🎵</h2>
+            <div class="music-container">
+                <div class="player-info">
+                    <p>Musik untuk menemani momen indah bersama</p>
+                </div>
+                <div class="music-player">
+                    <div class="player-controls">
+                        <button class="play-btn" id="playBtn" onclick="toggleMusic()">
+                            <span class="play-icon">▶</span>
+                        </button>
+                        <div class="progress-bar">
+                            <div class="progress" id="progress"></div>
+                        </div>
+                    </div>
+                    <div class="volume-control">
+                        <label>Volume:</label>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="70" onchange="changeVolume(this.value)">
+                    </div>
+                </div>
+                <div class="playlist">
+                    <h3>Daftar Musik Romantis</h3>
+                    <ul>
+                        <li>🎵 Lagu Cinta Sejati</li>
+                        <li>🎵 Untukmu Sampai Selamanya</li>
+                        <li>🎵 Cinta Abadi</li>
+                        <li>🎵 Janji Untuk Selamanya</li>
+                    </ul>
+                    <p class="note">💡 Ganti dengan musik favorit kalian</p>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="scrollToSection('message')">Pesan Spesial Untukmu ↓</button>
+        </section>
+
+        <!-- Message Section -->
+        <section class="section message-section" id="message">
+            <h2>Pesan Spesialku Untukmu 💌</h2>
+            <div class="message-container">
+                <div class="love-message">
+                    <p>Sayang,</p>
+                    <p>
+                        Aku ingin kamu tahu bahwa <strong>kamu adalah alasan senyumku setiap hari</strong>. 
+                        Tidak peduli apa yang terjadi di dunia ini, kehadiranmu membuat semuanya terasa baik.
+                    </p>
+                    <p>
+                        <strong>Cintaku untuk mu tidak bisa diukur dengan kata-kata</strong>, hanya bisa dirasakan di dalam hati ini 
+                        yang berdenyut dengan nama mu.
+                    </p>
+                    <p>
+                        Terima kasih karena memilihku, percaya padaku, dan membagikan hidupmu denganku. 
+                        Aku berjanji akan <strong>selalu ada untukmu, dalam suka maupun duka</strong>.
+                    </p>
+                    <p class="closing">
+                        Selamanya milikmu, 💕<br>
+                        <strong>Pribadi yang mencintaimu</strong>
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="scrollToSection('welcome')">Mulai Dari Awal ↑</button>
+        </section>
+    </main>
+
+    <!-- Floating Hearts -->
+    <div class="floating-hearts"></div>
+
+    <!-- Audio Element (ganti src dengan musik favorit) -->
+    <audio id="bgMusic" preload="auto">
+        <source src="assets/romantic-music.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung audio element.
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>

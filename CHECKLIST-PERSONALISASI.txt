@@ -1,0 +1,332 @@
+<!-- 
+CHECKLIST PERSONALISASI & TEMPLATE
+
+SEBELUM DISHARE - CHECKLIST LENGKAP:
+=====================================
+
+□ SETUP DASAR
+  □ Buka index.html di browser - pastikan tampil
+  □ Semua sektion bisa di-scroll
+  □ Tombol navigasi bekerja dengan baik
+  □ Responsive di mobile (test dengan zoom)
+
+□ KUSTOMISASI TEKS
+  □ Ganti judul header sesuai keinginan
+  □ Edit pernyataan cinta yang bermakna
+  □ Sesuaikan/tulis puisi sendiri
+  □ Edit pesan spesial di akhir
+  □ Update nama penerima jika perlu
+  □ Proofread semua teks (cek typo, grammar)
+  □ Pastikan teks tidak terlalu panjang/pendek
+
+□ TAMBAH FOTO
+  □ Siapkan minimal 4 foto kenangan indah
+  □ Ukuran foto reasonable (< 5MB per foto)
+  □ Format: JPG atau PNG
+  □ Upload ke placeholder atau folder assets
+  □ Test tampilan foto di berbagai ukuran layar
+
+□ MUSIK
+  □ Pilih lagu romantis yang cocok
+  □ Simpan ke folder assets (atau gunakan online link)
+  □ Test putar musik di website
+  □ Volume tidak terlalu keras
+  □ Durasi musik cukup (3-5 menit bagus)
+
+□ WARNA & TEMA
+  □ Pilih warna yang sesuai personality
+  □ Edit gradient di CSS sesuai pilihan
+  □ Test warna tampil dengan baik di mobile
+  □ Pastikan teks readable di semua background
+
+□ TESTING
+  □ Test di Desktop browser (Chrome, Firefox, Safari, Edge)
+  □ Test di Mobile browser
+  □ Test di Tablet
+  □ Test dengan musik on
+  □ Test upload foto di mobile
+  □ Test scroll di mobile
+  □ Clear cache & test fresh load
+  □ Test dengan sound off juga berfungsi
+
+□ FINAL CHECK
+  □ Semua link bekerja
+  □ Tidak ada 404 errors
+  □ Tidak ada console errors (F12)
+  □ Loading speed acceptable
+  □ Tidak ada typo yang terlewat
+  □ Emoji/simbol tampil dengan benar
+  □ Animasi smooth dan tidak lagging
+
+□ SHAREABILITY
+  □ Kumpulkan semua file dalam satu folder
+  □ Folder clean dan terorganisir
+  □ Ada file README atau SETUP untuk guide
+  □ Siap untuk di-host atau di-share lokal
+
+TEMPLATE PERNYATAAN CINTA PERSONAL:
+====================================
+
+Gunakan template ini untuk membuat pernyataan Anda:
+
+[NAMA PENERIMA],
+
+Sejak [waktu temu], hidupku berubah total. [Hal spesifik tentang orang ini].
+
+Kamu adalah [deskripsi unik tentang orang ini]. [Kebiasaan/ciri khusus yang 
+kamu cintai]. Setiap hari denganmu adalah [perasaan/deskripsi].
+
+Aku mencintaimu karena [3-5 alasan spesifik]:
+1. [Alasan pertama]
+2. [Alasan kedua]
+3. [Alasan ketiga]
+4. [Alasan keempat]
+5. [Alasan kelima - opsional]
+
+[Komitmen/janji khusus untuk masa depan].
+
+Terima kasih telah [hal spesifik yang dia lakukan untukmu].
+
+Selamanya milikmu,
+[Nama Pengirim]
+
+CONTOH SUDAH DI-FILL:
+====================
+
+[SARAH],
+
+Sejak hari pertama kita bertemu di kelas, hatiku tahu sudah menemukan rumahnya. 
+Senyummu yang cerah telah menerangi setiap hari gelap dalam hidupku.
+
+Kamu adalah wanita paling luar biasa yang pernah aku kenal. Cara kamu mendengarkan 
+dengan sepenuh hati, tawa murni kamu yang menular, dan ketulusan tanpa batas. 
+Setiap hari denganmu adalah petualangan baru yang penuh keajaiban.
+
+Aku mencintaimu karena:
+1. Kamu membuat aku ingin menjadi versi terbaik dari diriku
+2. Kamu selalu ada di saat aku paling membutuhkan
+3. Kamu membuat aku tertawa bahkan saat aku ingin menangis
+4. Kamu mencintai aku sebagaimana adanya
+5. Kamu membuat aku percaya pada cinta sejati
+
+Aku berjanji akan selalu melindungimu, mendukungmu, dan mencintaimu setiap hari.
+
+Terima kasih telah menerima aku dengan segala kekurangan dan kepribadian anehku.
+
+Selamanya milikmu,
+[Nama Aku]
+
+TEMPLATE PUISI ALTERNATIF:
+==========================
+
+Format 1: Haiku Love (5-7-5 syllable structure)
+[Baris pertama - 5 syllable]
+[Baris kedua - 7 syllable]  
+[Baris ketiga - 5 syllable]
+
+Contoh:
+Mata bersinar terang (5)
+Senyum yang memikat hatiku (7)
+Cinta abadi ini (5)
+
+Format 2: Free Verse
+Cukup tulis dari hati,
+Tidak perlu ikuti aturan,
+Ekspresikan perasaan dengan cara mu sendiri.
+
+Format 3: Structured Poem
+Bait 1: About first meeting / first impression
+Bait 2: About why you love them
+Bait 3: About future together
+Bait 4: About forever & commitment
+
+PESAN SPESIAL TEMPLATE:
+=======================
+
+Dear [Nama],
+
+I want you to know that [pernyataan tentang perasaan]. 
+[Detail spesifik tentang mereka]. [Bagaimana mereka impact hidup kamu]. 
+
+[Komitmen/janji]. [Harapan untuk masa depan].
+
+I love you more than [metafora indah].
+
+Forever yours,
+[Nama Anda]
+
+CONTOH ISI PESAN:
+=================
+
+Dear Cinta,
+
+I want you to know that you are the best decision I've ever made. 
+You're the person who understands me without needing words. 
+Every moment with you feels like a dream come true, and I never want to wake up.
+
+I promise to be there for you, to support your dreams, and to love you 
+unconditionally for the rest of my life. You are my today and all my tomorrows.
+
+I love you more than words could ever express, more than the stars in the sky, 
+more than anything in this world.
+
+Forever yours,
+Your loving [name]
+
+WARNA REKOMENDASI BERDASARKAN PERSONALITY:
+==========================================
+
+Romantis Tradisional:
+- Pink-Red: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)
+- Rose Gold: linear-gradient(135deg, #f5af19 0%, #f12711 100%)
+
+Modern & Elegant:
+- Navy-Purple: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+- Silver-Blue: linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%)
+
+Playful & Fun:
+- Rainbow: linear-gradient(135deg, #ff006e 0%, #8338ec 100%)
+- Coral: linear-gradient(135deg, #ffb88c 0%, #f980b5 100%)
+
+Calm & Peaceful:
+- Mint: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)
+- Sky: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)
+
+Vintage & Romantic:
+- Sepia: linear-gradient(135deg, #8B4513 0%, #D2691E 100%)
+- Peach: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)
+
+EMOJI COMBINATIONS UNTUK SECTION HEADER:
+=========================================
+
+Welcome Section:
+❤️💕 | 💑💕 | 👫💖 | 💘✨
+
+Declaration Section:
+👼❤️ | 💕✨ | 💑💖 | 👫💏
+
+Gallery Section:
+📸❤️ | 🎞️💕 | 📷✨ | 🖼️💖
+
+Poetry Section:
+✍️❤️ | 📝💕 | 🎭✨ | 📖💖
+
+Music Section:
+🎵❤️ | 🎶💕 | 📻✨ | 🎼💖
+
+Message Section:
+💌❤️ | 📮💕 | 💬✨ | 📝💖
+
+TIPS UNTUK MEMBUAT LEBIH MEMORABLE:
+===================================
+
+1. ADD PERSONAL TOUCHES
+   - Include inside jokes
+   - Reference special moments
+   - Use pet names / nicknames
+   - Add specific memories
+
+2. MAKE IT INTERACTIVE
+   - Add custom click events
+   - Create secrets/easter eggs
+   - Add surprise elements
+   - Make them laugh
+
+3. PERSONALIZE MUSIC
+   - Use "song yang significant"
+   - Add multiple playlist
+   - Add volume control note
+   - Dedicate the song
+
+4. SPECIAL EFFECTS
+   - Add confetti di section specific
+   - Add particles untuk tema
+   - Add sound effects untuk button
+   - Add glow effects
+
+5. MOBILE EXPERIENCE
+   - Add full-screen mode button
+   - Add print-friendly version
+   - Add "send to someone" share button
+   - Add offline capability
+
+DO's & DON'Ts:
+==============
+
+DO:
+✓ Be authentic dan genuine
+✓ Proofread sebelum send
+✓ Customize sesuai personality mereka
+✓ Test di berbagai device
+✓ Add personal touches
+✓ Be creative & have fun
+✓ Backup files Anda
+
+DON'T:
+✗ Copy-paste generik teks
+✗ Salah spell nama mereka
+✗ Font terlalu kecil di mobile
+✗ Music terlalu keras
+✗ Terlalu banyak animation (lagging)
+✗ Forget to test responsiveness
+✗ Share sebelum final check
+
+SHARING OPTIONS:
+=================
+
+1. Local Sharing:
+   - USB drive ke device mereka
+   - Share folder via AirDrop
+   - Bluetooth transfer
+   - Email the link (jika hosted)
+
+2. Online Sharing:
+   - GitHub Pages link
+   - Netlify custom domain
+   - Google Drive link
+   - OneDrive link
+
+3. In-Person:
+   - Open di laptop/PC
+   - Full screen presentation
+   - Mobile-friendly surprise
+   - Jangan bilang sebelumnya!
+
+BACKUP & STORAGE:
+=================
+
+Sebelum final share:
+□ Backup di external drive
+□ Upload ke cloud (Google Drive, Dropbox)
+□ Zip folder untuk archive
+□ Save copy di folder berbeda
+□ Email copy ke diri sendiri
+
+FOLLOW-UP AFTER SHARING:
+========================
+
+□ Ask untuk feedback
+□ Record reaction mereka (jika mungkin)
+□ Ask favorite part
+□ Ask jika ada suggestions
+□ Make memento dari moment ini
+□ Keep backup of website
+
+---
+
+GOOD LUCK! 💕✨
+
+Semoga pernyataan cinta Anda membuat mereka bahagia!
+
+Remember: It's not about being perfect, 
+it's about being genuine and showing effort. 💖
+
+The best love declaration adalah yang from the heart! 
+
+Let your creativity shine! ✨💕
+
+---
+
+Hubungi jika ada pertanyaan! 
+Happy declaring! 🥰❤️
+-->

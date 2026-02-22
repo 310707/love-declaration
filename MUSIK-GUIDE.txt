@@ -1,0 +1,61 @@
+<!-- 
+PANDUAN UPLOAD MUSIK
+
+Untuk menambahkan musik ke website, Anda bisa:
+
+OPSI 1: GANTI DENGAN FILE MUSIK LOKAL
+=====================================
+1. Simpan file musik (MP3, WAV, OGG) di folder:
+   love-declaration/assets/romantic-music.mp3
+
+2. Judul file sudah sesuai, tinggal letakkan file musik di folder
+
+OPSI 2: GUNAKAN URL MUSIK ONLINE
+=================================
+Buka file index.html dan cari baris ini (sekitar nomor 220):
+
+    <audio id="bgMusic" preload="auto">
+        <source src="assets/romantic-music.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung audio element.
+    </audio>
+
+Ubah menjadi (ganti URL dengan musik favorit):
+
+    <audio id="bgMusic" preload="auto">
+        <source src="https://link-musik.com/lagu.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung audio element.
+    </audio>
+
+REKOMENDASI MUSIK GRATIS DENGAN LINK:
+=====================================
+
+1. Dari Bensound (Romantis):
+   https://www.bensound.com/bensound-music/bensound-relaxing.mp3
+   
+2. Dari Pixabay Music:
+   Kunjungi pixabay.com/music lalu ambil link download
+
+3. Dari YouTube:
+   Gunakan YouTube Audio Library (login Gmail diperlukan)
+   Ambil link dari download atau share
+
+4. Dari Free Music Archive:
+   freemusicarchive.org - cari musik romantis, ambil link
+
+TIPS:
+====
+- Pilih musik yang tidak terlalu besar (< 10MB) untuk loading cepat
+- Pastikan musik berdurasi cukup untuk dinikmati (3-5 menit)
+- Teste musik sebelum dishare
+- Gunakan musik tanpa vocal jika ingin lebih fokus ke pesan
+
+SUPORTER BROWSER:
+================
+✓ MP3 - Supported semua browser
+✓ WAV - Supported tapi file besar
+✓ OGG - Supported Firefox, Chrome, Opera
+✓ M4A - Limited support
+
+Paling aman gunakan MP3!
+
+-->

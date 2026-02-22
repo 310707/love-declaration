@@ -1,0 +1,366 @@
+<!-- 
+PANDUAN TEKNIS & ADVANCED CUSTOMIZATION
+
+FILE STRUCTURE:
+===============
+
+love-declaration/
+├── index.html                 # File HTML utama (jangan rename)
+├── style.css                  # File CSS untuk styling (jangan rename jika di-link di HTML)
+├── script.js                  # File JavaScript untuk interaktif (jangan rename jika di-link)
+├── assets/                    # Folder untuk musik dan media
+│   ├── romantic-music.mp3     # File musik (opsional, sesuaikan nama di HTML)
+│   └── foto1.jpg, foto2.jpg   # (Opsional) Foto untuk gallery
+├── README.md                  # Dokumentasi (file ini)
+├── SETUP.md                   # Panduan setup cepat
+├── MUSIK-GUIDE.txt           # Panduan upload musik
+├── CONTOH-TEMA.html          # Contoh tema berbeda
+└── TROUBLESHOOT.txt          # File ini
+
+CARA BUKA DI BERBAGAI CARA:
+===========================
+
+1. LANGSUNG DOUBLE-CLICK
+   - Double-click index.html
+   - Browser default akan membuka
+
+2. DRAG & DROP
+   - Drag index.html ke browser
+   - akan langsung terbuka
+
+3. RIGHT-CLICK OPEN WITH
+   - Right-click index.html
+   - Pilih "Open with" browser pilihan
+
+4. SERVER LOCAL
+   - Windows: gunakan Python SimpleHTTPServer
+   - Mac/Linux: python3 -m http.server 8000
+   - Akses di: localhost:8000
+
+MENGUBAH STRUKTUR FILE:
+=======================
+
+Jika ingin menukar nama file, pastikan update di HTML:
+
+Contoh: Jika rename style.css ke styles.css
+Di index.html baris ke-5, ubah:
+  <link rel="stylesheet" href="style.css">
+Menjadi:
+  <link rel="stylesheet" href="styles.css">
+
+Contoh: Jika rename script.js ke app.js
+Di index.html baris terakhir (sebelum </body>), ubah:
+  <script src="script.js"></script>
+Menjadi:
+  <script src="app.js"></script>
+
+JAVASCRIPT MEMOLUDASI:
+=====================================================================
+
+Fungsi-fungsi yang bisa dikustomisasi di script.js:
+
+1. createHearts() - Membuat animasi hati jatuh
+   Ubah jumlah:
+   const heartCount = window.innerWidth < 768 ? 5 : 10;
+   (5 untuk mobile, 10 untuk desktop)
+
+2. toggleMusic() - Play/pause musik
+   Ubah durasi max di akhir:
+   setTimeout(() => { ... }, 30000);
+   Ganti 30000 (30 detik) dengan durasi dalam millisecond
+
+3. createClickHearts() - Hati yang muncul saat klik
+   Ubah jumlah hati:
+   for (let i = 0; i < 5; i++)
+   Ganti 5 dengan jumlah hati yang mau
+
+4. createConfetti() - Efek konfetti saat masuk message section
+   Ubah jenis karakter di array colors
+   Ubah jumlah:
+   const confettiCount = 30;
+
+EDIT CSS UNTUK TAMPILAN BERBEDA:
+================================
+
+1. MENGUBAH UKURAN FONT:
+
+   Di style.css cari:
+   .welcome-content h2 {
+       font-size: 48px;
+   }
+   
+   Ubah 48px ke ukuran yang didapat:
+   - 32px untuk smaller
+   - 64px untuk larger
+   - 72px untuk jumbo
+
+2. MENGUBAH SPACING/PADDING:
+
+   Cari elemento yang ingin di-ubah, contoh:
+   .section {
+       padding: 40px 20px;
+   }
+   
+   Ubah: padding: [atas-bawah] [kiri-kanan]
+   - Naikkan untuk space lebih besar
+   - Turunkan untuk space lebih kecil
+
+3. MENGUBAH KECEPATAN ANIMASI:
+
+   Cari @keyframes animation, contoh:
+   @keyframes fadeInUp {
+       duration: 0.8s ease-out;
+   }
+   
+   Ubah 0.8s ke harga berbeda:
+   - 0.3s untuk lebih cepat
+   - 1.5s untuk lebih lambat
+
+4. MENGUBAH BORDER RADIUS (ROUNDED):
+
+   Cari border-radius dalam style, contoh:
+   border-radius: 20px;
+   
+   Ubah nilai:
+   - 0px untuk square (tidak rounded)
+   - 10px untuk slightly rounded
+   - 50% untuk fully rounded (circle)
+
+MENAMBAH ANIMASI BARU:
+======================
+
+Jika ingin menambah animasi kustom:
+
+1. Di style.css, tambah keyframes baru:
+
+   @keyframes slideInFromLeft {
+       from {
+           transform: translateX(-100px);
+           opacity: 0;
+       }
+       to {
+           transform: translateX(0);
+           opacity: 1;
+       }
+   }
+
+2. Apply ke element:
+
+   .section {
+       animation: slideInFromLeft 0.8s ease-out;
+   }
+
+MENAMBAH SECTION BARU:
+======================
+
+Jika ingin menambah section baru:
+
+1. Di index.html, tambah HTML:
+
+   <section class="section gallery-section" id="gallery-2">
+       <h2>Judul Baru</h2>
+       <div class="content">
+           <!-- Konten di sini -->
+       </div>
+       <button class="btn btn-primary" onclick="scrollToSection('next-id')">
+           Lanjut →
+       </button>
+   </section>
+
+2. Di style.css, tambah CSS:
+
+   .gallery-section-2 {
+       background: linear-gradient(135deg, #warna1 0%, #warna2 100%);
+       color: white;
+   }
+
+   .gallery-section-2 h2 {
+       font-size: 42px;
+       margin-bottom: 40px;
+   }
+
+3. Update link di HTML ke section baru
+
+PERFORMANCE OPTIMIZATION:
+===========================
+
+Untuk website lebih cepat:
+
+1. Kurangi jumlah hati:
+   const heartCount = window.innerWidth < 768 ? 3 : 5;
+
+2. Disable beberapa animasi di mobile:
+   @media (max-width: 767px) {
+       .heart {
+           animation: none !important;
+       }
+   }
+
+3. Optimize foto:
+   - Compress sebelum upload
+   - Gunakan format WebP jika support browser
+   - Ukuran ideal: 1-2MB per foto
+
+4. Minify CSS & JS (untuk production):
+   - Gunakan minifier online
+   - Hapus komentar untuk file js/css production
+
+MEMPUBLIKASIKAN KE INTERNET:
+============================
+
+1. GITHUB PAGES (Gratis, recommended):
+   
+   a. Buat account di github.com
+   b. Buat repository baru (public)
+   c. Upload semua file folder love-declaration
+   d. Go to Settings > Pages
+   e. Set branch ke main, folder ke root
+   f. Tunggu deployment, ambil URL yang diberikan
+   
+   URL akan seperti: username.github.io/love-declaration
+
+2. NETLIFY (Gratis, Super mudah):
+   
+   a. Pergi ke netlify.com
+   b. Click "Deploy manually"
+   c. Drag & drop folder love-declaration
+   d. Automatic deploy selesai dalam hitungan detik
+   
+   URL akan auto-generated
+
+3. VERCEL (Gratis, untuk Next.js):
+   
+   a. Pergi ke vercel.com
+   b. Login dengan GitHub
+   c. Pilih repository
+   d. Click Deploy
+   e. Otomatis dipublish
+
+4. HEROKU:
+   
+   a. Buat account di heroku.com
+   b. Create new app
+   c. Deploy via GitHub atau Heroku CLI
+   d. Tunggu deployment selesai
+
+CUSTOM DOMAIN:
+==============
+
+Jika ingin ganti default URL dengan nama custom:
+
+1. Beli domain di:
+   - Namecheap.com
+   - GoDaddy.com
+   - Domain.com
+   - atau provider lokal
+
+2. Setup DNS pointing ke:
+   - GitHub Pages nameservers
+   - Netlify nameservers (otomatis tersedia di site)
+
+3. Di website hosting, tambah custom domain di settings
+
+ADVANCED TIPS:
+==============
+
+1. Enable Dark Mode CSS:
+   Tambah di style.css:
+   
+   @media (prefers-color-scheme: dark) {
+       body {
+           background: #000;
+           color: #fff;
+       }
+   }
+
+2. Add PWA (Progressive Web App):
+   Buat manifest.json dan service-worker.js
+   Bisa diakses offline dan install seperti app
+
+3. Add Analytics:
+   Tambah Google Analytics tracking code
+   Ketahui berapa banyak yang lihat website
+
+4. Add Comments/Votes:
+   Integrasikan dengan service seperti Disqus
+   Guest bisa kasih feedback langsung
+
+5. Email Integration:
+   Integrasikan dengan Formspree atau EmailJS
+   Terima pesan langsung ke email
+
+SECURITY & PRIVACY:
+===================
+
+1. Jangan share file HTML dengan informasi sensitif
+2. Jangan hardcode password atau API keys
+3. Gunakan HTTPS jika di-host online
+4. Validate input jika ada form
+5. Minimal CSP headers untuk security
+
+
+TROUBLESHOOTING CHECKLIST:
+==========================
+
+Problem: File tidak terbuka di browser
+Solution:
+  - Pastikan file ekstension .html (bukan .txt)
+  - Cek lokasi file path
+  - Try rename jadi index.html
+  - Buka dengan right-click > Open with > Browser
+
+Problem: CSS tidak applied
+Solution:
+  - Refresh browser (Ctrl+F5 untuk hard refresh)
+  - Cek nama file style.css sama di HTML
+  - Cek path di HTML <link> tag benar
+  - Clear browser cache
+
+Problem: JavaScript error di console
+Solution:
+  - Buka F12 > Console tab
+  - Cari error message red text
+  - Check line number di error
+  - Cek syntax dan spelling
+
+Problem: Foto tidak muncul
+Solution:
+  - Pastikan path file benar
+  - Cek format supported (JPG, PNG, GIF)
+  - File size tidak terlalu besar (> 10MB)
+  - Try refresh atau buka incognito mode
+
+Problem: Musik tidak terdengar
+Solution:
+  - Cek file audio ada di folder assets
+  - Try buka developer console check untuk error
+  - Test dengan file musik yang berbeda
+  - Check browser volume not muted
+  - Some browsers need user interaction first
+
+Problem: Website tidak responsive mobile
+Solution:
+  - Refresh browser Ctrl+F5
+  - Test di incognito mode
+  - Clear cache & cookies
+  - Test di browser berbeda
+  - Check meta viewport ada di HTML
+
+Problem: Animasi sangat lambat
+Solution:
+  - Disable beberapa animasi di CSS
+  - Reduce jumlah hati di JavaScript
+  - Clear browser tab lainnya
+  - Gunakan browser yang lebih ringan
+  - Update graphics driver
+
+---
+
+Jika masalah still persist, coba:
+1. Copy fresh HTML dari contoh
+2. Clear semua cache dan cookies
+3. Restart browser dan computer
+4. Try berbagai browser (Chrome, Firefox, Safari, Edge)
+
+Kalau masih stuck bisa research error message di Google atau StackOverflow!
+-->
