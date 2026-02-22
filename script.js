@@ -60,7 +60,7 @@ function toggleMusic() {
         isPlaying = false;
     } else {
         // Cek apakah file musik tersedia
-        if (!audio.src || audio.src.includes('romantic-music.mp3')) {
+        if (!audio.src || audio.src.includes('bunga-abadi')) {
             // Gunakan Web Audio API untuk membuat suara demo
             playDemoAudio();
             return;
@@ -95,7 +95,7 @@ audio.addEventListener('ended', () => {
 
 // Click on progress bar to seek
 document.querySelector('.progress-bar').addEventListener('click', (e) => {
-    if (audio.src && !audio.src.includes('romantic-music.mp3')) {
+    if (audio.src && !audio.src.includes('bunga-abadi')) {
         const rect = e.currentTarget.getBoundingClientRect();
         const percent = (e.clientX - rect.left) / rect.width;
         audio.currentTime = percent * audio.duration;
