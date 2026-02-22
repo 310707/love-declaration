@@ -26,64 +26,64 @@ function createHearts() {
 // Recreate hearts when window is resized
 window.addEventListener('resize', () => {
     document.querySelector('.floating-hearts').innerHTML = '';
-    createHearts();
-});
+    async function exportDeklarasi() {
+        // Kumpulkan semua data foto
+        const deklarasiFotos = {};
+        let hasPhoto = false;
+        for (let i = 0; i < 4; i++) {
+            const foto = getPhoto(i);
+            if (foto) {
+                deklarasiFotos[i] = foto;
+                hasPhoto = true;
+            }
+        }
 
-// Initial heart creation
-document.addEventListener('DOMContentLoaded', createHearts);
+        if (!hasPhoto) {
+            alert('⚠️ Tidak ada foto yang tersimpan. Tambahkan foto terlebih dahulu!');
+            return;
+        }
 
-// ============================================
-// SMOOTH SCROLL TO SECTION
-// ============================================
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
+        // Ambil CSS untuk embed (fallback kosong jika gagal)
+        let cssText = '';
+        try {
+            const resp = await fetch('style.css');
+            if (resp.ok) cssText = await resp.text();
+        } catch (e) {
+            console.warn('Tidak dapat mengambil style.css untuk embed:', e);
+        }
+
+        // Coba embed audio sebagai data URL jika memungkinkan
+        let audioDataUrl = '';
+        try {
+            if (audio && audio.src) {
+                const resp = await fetch(audio.src);
+                if (resp.ok) {
+                    const blob = await resp.blob();
+                    const reader = new FileReader();
+                    audioDataUrl = await new Promise((resolve) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('Gagal embed audio:', e);
+            audioDataUrl = audio ? audio.src : '';
+        }
+
+        // Buat HTML yang self-contained (embed CSS + script untuk me-load foto)
+        const htmlContent = `<!DOCTYPE html>\n<html lang="id">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Pernyataan Cinta Untukmu ❤️</title>\n    <style>${cssText}</style>\n    <script>\n        // Embedded photos data\n        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiFotos)};\n        const EMBEDDED_AUDIO = ${JSON.stringify(audioDataUrl)};\n\n        window.addEventListener('DOMContentLoaded', () => {\n            // Set photos langsung ke placeholder (jika ada)\n            try {\n                Object.keys(DEKLARASI_PHOTOS).forEach(key => {\n                    const index = parseInt(key);\n                    const photoData = DEKLARASI_PHOTOS[key];\n                    // simpan ke localStorage juga untuk konsistensi\n                    try { localStorage.setItem('loveDeclaration_photo_' + index, photoData); } catch(e){}\n                    const placeholder = document.querySelectorAll('.photo-placeholder')[index];\n                    if (placeholder) {\n                        placeholder.style.backgroundImage = 'url("' + photoData + '")';\n                        placeholder.style.backgroundSize = 'cover';\n                        placeholder.style.backgroundPosition = 'center';\n                        placeholder.innerHTML = '';\n                    }\n                });\n            } catch (e) { console.warn('Error restore photos:', e); }\n\n            // Set audio src jika embedded\n            try {\n                if (EMBEDDED_AUDIO) {\n                    const audioEl = document.getElementById('bgMusic');\n                    if (audioEl) {\n                        audioEl.src = EMBEDDED_AUDIO;\n                        // Try to play muted then unmute after user interaction\n                        audioEl.muted = true;\n                        audioEl.play().then(() => {\n                            setTimeout(() => { audioEl.muted = false; }, 800);\n                        }).catch(() => {\n                            // ignore\n                        });\n                    }\n                }\n            } catch (e) { console.warn('Error set audio:', e); }\n        });\n    </script>\n</head>\n<body>\n    ${getCurrentPageHTML()}\n</body>\n</html>`;
+
+        // Download file
+        const link = document.createElement('a');
+        link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+        link.download = 'Deklarasi-Cinta-' + new Date().getTime() + '.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        alert('✅ Deklarasi berhasil di-unduh! File include semua foto dan (jika memungkinkan) audio embedded.');
     }
-}
-
-// ============================================
-// MUSIC PLAYER FUNCTIONALITY
-// ============================================
-let isPlaying = false;
-const audio = document.getElementById('bgMusic');
-const playBtn = document.getElementById('playBtn');
-const progress = document.getElementById('progress');
-const volumeSlider = document.getElementById('volumeSlider');
-
-// Initialize audio settings
-if (audio) {
-    audio.volume = 0.7; // Set default volume to 70%
-    audio.muted = false; // Ensure not muted on load
-    console.log('🎵 Audio element found:', audio);
-    console.log('🔊 Audio initialized with volume:', audio.volume * 100 + '%');
-    console.log('📁 Audio src:', audio.src);
-    console.log('🔇 Audio muted status:', audio.muted);
-    
-    // Setup error handling
-    audio.addEventListener('error', (e) => {
-        console.error('❌ Audio error:', e.target.error);
-        console.error('Error code:', e.target.error.code);
-        console.error('Error message:', e.target.error.message);
-    });
-    
-    audio.addEventListener('canplay', () => {
-        console.log('✅ Audio ready to play');
-    });
-    
-    audio.addEventListener('play', () => {
-        console.log('▶️ Audio started playing');
-    });
-    
-    audio.addEventListener('pause', () => {
-        console.log('⏸️ Audio paused');
-    });
-}
-
-// Setup volume slider event
-if (volumeSlider) {
-    volumeSlider.addEventListener('mousedown', () => {
-        if (audio) {
             audio.muted = false;
             console.log('🔊 Volume slider clicked - unmuting');
         }
