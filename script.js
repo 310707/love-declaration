@@ -131,49 +131,122 @@ function playDemoAudio() {
 // PHOTO UPLOAD & STORAGE FUNCTIONALITY
 // ============================================
 
+// Check if localStorage is available
+function isLocalStorageAvailable() {
+    try {
+        const test = '__localStorage_test__';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch(e) {
+        console.warn('⚠️ localStorage tidak tersedia');
+        return false;
+    }
+}
+
+// Store photos in memory jika localStorage tidak available
+let photoStorage = {};
+const useLocalStorage = isLocalStorageAvailable();
+
+function getPhoto(index) {
+    const key = `loveDeclaration_photo_${index}`;
+    if (useLocalStorage) {
+        return localStorage.getItem(key);
+    } else {
+        return photoStorage[key];
+    }
+}
+
+function setPhoto(index, data) {
+    const key = `loveDeclaration_photo_${index}`;
+    try {
+        if (useLocalStorage) {
+            localStorage.setItem(key, data);
+        } else {
+            photoStorage[key] = data;
+        }
+        return true;
+    } catch(e) {
+        console.error('Error saving photo:', e);
+        alert('Gagal menyimpan foto. Ukuran foto terlalu besar atau storage penuh.');
+        return false;
+    }
+}
+
+function removePhoto(index) {
+    const key = `loveDeclaration_photo_${index}`;
+    if (useLocalStorage) {
+        localStorage.removeItem(key);
+    } else {
+        delete photoStorage[key];
+    }
+}
+
 // Initialize dan setup photos
 function initializePhotos() {
     const placeholders = document.querySelectorAll('.photo-placeholder');
     
     placeholders.forEach((placeholder, index) => {
-        const savedPhoto = localStorage.getItem(`loveDeclaration_photo_${index}`);
+        const savedPhoto = getPhoto(index);
         
         if (savedPhoto) {
             // Jika ada foto tersimpan, tampilkan
             placeholder.style.backgroundImage = `url('${savedPhoto}')`;
             placeholder.style.backgroundSize = 'cover';
             placeholder.style.backgroundPosition = 'center';
+            placeholder.style.position = 'relative';
             placeholder.innerHTML = '';
+            
+            // Setup delete button untuk foto yang sudah ada
+            setupDeleteButton(placeholder, index);
         }
         
         // Setup click listener untuk upload/edit foto
-        placeholder.addEventListener('click', (e) => {
+        placeholder.addEventListener('click', function(e) {
+            if (e.target.classList.contains('photo-delete-btn')) {
+                return; // Jangan trigger upload jika klik delete button
+            }
             e.stopPropagation();
             uploadPhoto(placeholder, index);
         });
-        
-        // Add delete button on hover untuk foto yang sudah ada
-        if (savedPhoto) {
-            placeholder.addEventListener('mouseenter', () => {
-                if (!placeholder.querySelector('.photo-delete-btn')) {
-                    const deleteBtn = document.createElement('div');
-                    deleteBtn.className = 'photo-delete-btn';
-                    deleteBtn.innerHTML = '✕';
-                    deleteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        deletePhoto(placeholder, index);
-                    });
-                    placeholder.appendChild(deleteBtn);
-                }
-            });
-            
-            placeholder.addEventListener('mouseleave', () => {
-                const deleteBtn = placeholder.querySelector('.photo-delete-btn');
-                if (deleteBtn) {
-                    deleteBtn.remove();
-                }
-            });
+    });
+}
+
+function setupDeleteButton(placeholder, index) {
+    // Remove existing delete button
+    const existingBtn = placeholder.querySelector('.photo-delete-btn');
+    if (existingBtn) {
+        existingBtn.remove();
+    }
+    
+    // Create delete button
+    const deleteBtn = document.createElement('div');
+    deleteBtn.className = 'photo-delete-btn';
+    deleteBtn.innerHTML = '✕';
+    deleteBtn.style.display = 'none';
+    
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`Hapus foto ini?`)) {
+            removePhoto(index);
+            placeholder.style.backgroundImage = 'none';
+            placeholder.innerHTML = `<span>📸 Foto ${index + 1}</span>`;
+            placeholder.style.position = 'relative';
+            initializePhotos();
         }
+    });
+    
+    placeholder.appendChild(deleteBtn);
+    
+    // Show/hide delete button on hover
+    placeholder.addEventListener('mouseenter', () => {
+        const btn = placeholder.querySelector('.photo-delete-btn');
+        if (btn) btn.style.display = 'flex';
+    });
+    
+    placeholder.addEventListener('mouseleave', () => {
+        const btn = placeholder.querySelector('.photo-delete-btn');
+        if (btn) btn.style.display = 'none';
     });
 }
 
@@ -186,9 +259,9 @@ function uploadPhoto(placeholder, index) {
         const file = e.target.files[0];
         if (!file) return;
         
-        // Check ukuran file (max 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            alert('Ukuran foto terlalu besar! Max 2MB.');
+        // Check ukuran file (max 1MB untuk lebih aman)
+        if (file.size > 1 * 1024 * 1024) {
+            alert('Ukuran foto terlalu besar! Max 1MB. Coba kompresi foto atau pilih ukuran lebih kecil.');
             return;
         }
         
@@ -196,20 +269,17 @@ function uploadPhoto(placeholder, index) {
         reader.onload = (event) => {
             const photoData = event.target.result;
             
-            // Simpan ke localStorage
-            try {
-                localStorage.setItem(`loveDeclaration_photo_${index}`, photoData);
-                
+            // Save to storage
+            if (setPhoto(index, photoData)) {
                 // Update tampilan
                 placeholder.style.backgroundImage = `url('${photoData}')`;
                 placeholder.style.backgroundSize = 'cover';
                 placeholder.style.backgroundPosition = 'center';
+                placeholder.style.position = 'relative';
                 placeholder.innerHTML = '';
                 
+                setupDeleteButton(placeholder, index);
                 console.log(`✅ Foto ${index + 1} berhasil disimpan!`);
-            } catch (error) {
-                console.error('Gagal menyimpan foto:', error);
-                alert('Gagal menyimpan foto. Coba foto dengan ukuran lebih kecil.');
             }
         };
         reader.readAsDataURL(file);
@@ -218,22 +288,11 @@ function uploadPhoto(placeholder, index) {
     input.click();
 }
 
-function deletePhoto(placeholder, index) {
-    if (confirm(`Hapus foto ${index + 1}?`)) {
-        localStorage.removeItem(`loveDeclaration_photo_${index}`);
-        placeholder.style.backgroundImage = 'none';
-        placeholder.innerHTML = `<span>📸 Foto ${index + 1}</span>`;
-        
-        // Re-init untuk foto ini saja
-        initializePhotos();
-    }
-}
-
 // Initialize photos saat DOM siap
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializePhotos);
 } else {
-    initializePhotos();
+    setTimeout(initializePhotos, 100);
 }
 
 // ============================================
@@ -426,47 +485,182 @@ document.addEventListener('visibilitychange', () => {
 let musicStarted = false;
 
 function startAutoPlay() {
-    if (audio && audio.src && !musicStarted) {
-        // Coba play dengan muted dulu (dijamin berhasil di modern browser)
-        audio.muted = true;
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                isPlaying = true;
-                playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-                playBtn.classList.add('playing');
-                musicStarted = true;
-                
-                // Unmute music setelah play berhasil
-                setTimeout(() => {
-                    audio.muted = false;
-                    console.log('🎵 Musik dimulai!');
-                }, 500);
-            }).catch((error) => {
-                console.log('Info: Autoplay terbatas - musik mulai saat user klik');
-                // Fallback: tunggu user click untuk unmute
-                document.addEventListener('click', unmuteMusic, { once: true });
-                document.addEventListener('touchstart', unmuteMusic, { once: true });
-            });
-        }
+    if (!audio) {
+        console.warn('❌ Audio element tidak ditemukan');
+        return;
     }
-}
-
-function unmuteMusic() {
-    if (audio && !isPlaying && musicStarted) {
-        audio.muted = false;
-        isPlaying = true;
-        playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-        playBtn.classList.add('playing');
+    
+    if (!audio.src) {
+        console.warn('❌ Audio src tidak ada');
+        return;
+    }
+    
+    if (musicStarted) {
+        return; // Prevent multiple attempts
+    }
+    
+    console.log('🎵 Memulai autoplay musik...');
+    audio.muted = true;
+    
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            isPlaying = true;
+            playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+            playBtn.classList.add('playing');
+            musicStarted = true;
+            
+            // Unmute music setelah play berhasil
+            setTimeout(() => {
+                audio.muted = false;
+                console.log('✅ Musik berhasil dimulai dan tidak di-mute!');
+            }, 1000);
+        }).catch((error) => {
+            console.log('ℹ️ Autoplay musik dibatasi browser, tunggu user interaksi...');
+            // Fallback: tunggu user click untuk play
+            const handleUserInteraction = () => {
+                if (!musicStarted && audio.src) {
+                    audio.muted = false;
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+                        playBtn.classList.add('playing');
+                        musicStarted = true;
+                        console.log('✅ Musik dimulai setelah user interaksi!');
+                    }).catch((e) => console.log('Error:', e));
+                }
+                document.removeEventListener('click', handleUserInteraction);
+                document.removeEventListener('touchstart', handleUserInteraction);
+            };
+            
+            document.addEventListener('click', handleUserInteraction);
+            document.addEventListener('touchstart', handleUserInteraction);
+        });
     }
 }
 
 // Jalankan autoplay saat DOM ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startAutoPlay);
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(startAutoPlay, 500);
+    });
 } else {
-    startAutoPlay();
+    setTimeout(startAutoPlay, 500);
+}
+
+// ============================================
+// EXPORT & IMPORT DEKLARASI
+// ============================================
+
+function exportDeklarasi() {
+    // Kumpulkan semua data foto
+    const deklarasiData = {
+        timestamp: new Date().toISOString(),
+        fotos: {}
+    };
+    
+    // Ambil semua foto dari storage
+    let hasPhoto = false;
+    for (let i = 0; i < 4; i++) {
+        const foto = getPhoto(i);
+        if (foto) {
+            deklarasiData.fotos[i] = foto;
+            hasPhoto = true;
+        }
+    }
+    
+    if (!hasPhoto) {
+        alert('⚠️ Tidak ada foto yang tersimpan. Tambahkan foto terlebih dahulu!');
+        return;
+    }
+    
+    // Create HTML file dengan data embedded
+    const htmlContent = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pernyataan Cinta Untukmu ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Data deklarasi embedded dalam file ini
+        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiData.fotos)};
+        
+        // Load foto saat page load
+        window.addEventListener('load', () => {
+            for (const index in DEKLARASI_PHOTOS) {
+                localStorage.setItem('loveDeclaration_photo_' + index, DEKLARASI_PHOTOS[index]);
+            }
+            console.log('✅ Foto berhasil di-load dari file deklarasi!');
+        });
+    </script>
+</head>
+<body>
+    ${getCurrentPageHTML()}
+</body>
+</html>`;
+    
+    // Download file
+    const link = document.createElement('a');
+    link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+    link.download = 'Deklarasi-Cinta-' + new Date().getTime() + '.html';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    alert('✅ Deklarasi berhasil di-unduh!\\n\\nFile include semua foto. Bagikan ke orang terkasih - saat mereka buka file, foto-foto akan otomatis muncul!');
+}
+
+function importDeklarasi(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const content = e.target.result;
+            
+            // Cari data foto dalam file
+            const match = content.match(/const DEKLARASI_PHOTOS = ({[^}]+:[^}]+});/);
+            if (match) {
+                const photosData = JSON.parse(match[1]);
+                
+                // Save semua foto ke localStorage
+                let count = 0;
+                for (const index in photosData) {
+                    localStorage.setItem('loveDeclaration_photo_' + index, photosData[index]);
+                    count++;
+                }
+                
+                // Refresh halaman untuk tampilkan foto
+                initializePhotos();
+                alert('✅ Deklarasi berhasil di-import!\\n' + count + ' foto berhasil dimuat.\\n\\nScroll ke atas untuk melihat foto-foto!');
+            } else {
+                alert('❌ File tidak valid. Pastikan file adalah deklarasi yang di-export dari sini.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error saat import file. Detail: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
+    
+    // Reset input
+    event.target.value = '';
+}
+
+function getCurrentPageHTML() {
+    // Ambil seluruh body content kecuali script
+    let html = document.body.innerHTML;
+    
+    // Remove semua script tag
+    html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/g, '');
+    
+    // Remove import file input
+    html = html.replace(/<input[^>]*id="importFile"[^>]*>/g, '');
+    
+    return html;
 }
 
 console.log('💕 Love Declaration website loaded successfully! 💕');

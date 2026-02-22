@@ -161,6 +161,28 @@
                     </p>
                 </div>
             </div>
+            <button class="btn btn-primary" onclick="scrollToSection('save')">Simpan & Bagikan ↓</button>
+        </section>
+
+        <!-- Save & Share Section -->
+        <section class="section save-section" id="save">
+            <h2>Simpan & Bagikan Deklarasi Cintamu 💾</h2>
+            <div class="save-container">
+                <p>Simpan deklarasi ini dengan semua foto kamu dalam satu file. Kamu bisa membagikannya ke orang terkasih!</p>
+                <div class="save-buttons">
+                    <button class="btn btn-primary" onclick="exportDeklarasi()">
+                        📥 Unduh Deklarasi Saya
+                    </button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                        📤 Muat Deklarasi Sebelumnya
+                    </button>
+                    <input type="file" id="importFile" accept=".html" style="display:none;" onchange="importDeklarasi(event)">
+                </div>
+                <p class="save-note">
+                    💡 Klik "Unduh" untuk menyimpan deklarasi dengan semua foto. 
+                    Bagikan file HTML hasil download ke orang terkasih, dan foto akan tetap ada!
+                </p>
+            </div>
             <button class="btn btn-primary" onclick="scrollToSection('welcome')">Mulai Dari Awal ↑</button>
         </section>
     </main>
