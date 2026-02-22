@@ -59,14 +59,10 @@ function toggleMusic() {
         playBtn.classList.remove('playing');
         isPlaying = false;
     } else {
-        // Cek apakah file musik tersedia
-        if (!audio.src || audio.src.includes('bunga-abadi')) {
-            // Gunakan Web Audio API untuk membuat suara demo
+        audio.play().catch(() => {
+            // Fallback jika URL tidak valid
             playDemoAudio();
-            return;
-        }
-        
-        audio.play();
+        });
         playBtn.innerHTML = '<span class="play-icon">⏸</span>';
         playBtn.classList.add('playing');
         isPlaying = true;
