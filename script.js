@@ -131,87 +131,109 @@ function playDemoAudio() {
 // PHOTO UPLOAD & STORAGE FUNCTIONALITY
 // ============================================
 
-// Initialize photos from localStorage saat page load
-function loadPhotosFromStorage() {
+// Initialize dan setup photos
+function initializePhotos() {
     const placeholders = document.querySelectorAll('.photo-placeholder');
+    
     placeholders.forEach((placeholder, index) => {
         const savedPhoto = localStorage.getItem(`loveDeclaration_photo_${index}`);
+        
         if (savedPhoto) {
+            // Jika ada foto tersimpan, tampilkan
             placeholder.style.backgroundImage = `url('${savedPhoto}')`;
             placeholder.style.backgroundSize = 'cover';
             placeholder.style.backgroundPosition = 'center';
-            placeholder.innerHTML = '<div class="photo-delete-btn">✕ Hapus</div>';
+            placeholder.innerHTML = '';
+        }
+        
+        // Setup click listener untuk upload/edit foto
+        placeholder.addEventListener('click', (e) => {
+            e.stopPropagation();
+            uploadPhoto(placeholder, index);
+        });
+        
+        // Add delete button on hover untuk foto yang sudah ada
+        if (savedPhoto) {
+            placeholder.addEventListener('mouseenter', () => {
+                if (!placeholder.querySelector('.photo-delete-btn')) {
+                    const deleteBtn = document.createElement('div');
+                    deleteBtn.className = 'photo-delete-btn';
+                    deleteBtn.innerHTML = '✕';
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deletePhoto(placeholder, index);
+                    });
+                    placeholder.appendChild(deleteBtn);
+                }
+            });
             
-            // Tambah event listener untuk delete button
-            const deleteBtn = placeholder.querySelector('.photo-delete-btn');
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                localStorage.removeItem(`loveDeclaration_photo_${index}`);
-                placeholder.style.backgroundImage = 'none';
-                placeholder.innerHTML = `<span>📸 Foto ${index + 1}</span>`;
-                placeholder.removeEventListener('click', arguments.callee);
-                attachPhotoClickListener(placeholder, index);
+            placeholder.addEventListener('mouseleave', () => {
+                const deleteBtn = placeholder.querySelector('.photo-delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.remove();
+                }
             });
         }
     });
 }
 
-function attachPhotoClickListener(placeholder, index) {
-    placeholder.addEventListener('click', function() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
+function uploadPhoto(placeholder, index) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
         
-        input.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                // Check ukuran file (max 2MB untuk localStorage)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Ukuran foto terlalu besar! Max 2MB.');
-                    return;
-                }
+        // Check ukuran file (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran foto terlalu besar! Max 2MB.');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const photoData = event.target.result;
+            
+            // Simpan ke localStorage
+            try {
+                localStorage.setItem(`loveDeclaration_photo_${index}`, photoData);
                 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const photoData = event.target.result;
-                    
-                    // Simpan ke localStorage
-                    localStorage.setItem(`loveDeclaration_photo_${index}`, photoData);
-                    
-                    // Update tampilan
-                    placeholder.style.backgroundImage = `url('${photoData}')`;
-                    placeholder.style.backgroundSize = 'cover';
-                    placeholder.style.backgroundPosition = 'center';
-                    placeholder.innerHTML = '<div class="photo-delete-btn">✕ Hapus</div>';
-                    
-                    // Tambah delete button listener
-                    const deleteBtn = placeholder.querySelector('.photo-delete-btn');
-                    deleteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        localStorage.removeItem(`loveDeclaration_photo_${index}`);
-                        placeholder.style.backgroundImage = 'none';
-                        placeholder.innerHTML = `<span>📸 Foto ${index + 1}</span>`;
-                        attachPhotoClickListener(placeholder, index);
-                    });
-                };
-                reader.readAsDataURL(file);
+                // Update tampilan
+                placeholder.style.backgroundImage = `url('${photoData}')`;
+                placeholder.style.backgroundSize = 'cover';
+                placeholder.style.backgroundPosition = 'center';
+                placeholder.innerHTML = '';
+                
+                console.log(`✅ Foto ${index + 1} berhasil disimpan!`);
+            } catch (error) {
+                console.error('Gagal menyimpan foto:', error);
+                alert('Gagal menyimpan foto. Coba foto dengan ukuran lebih kecil.');
             }
-        });
-        
-        input.click();
+        };
+        reader.readAsDataURL(file);
     });
+    
+    input.click();
 }
 
-// Setup photo upload listeners
-document.querySelectorAll('.photo-placeholder').forEach((placeholder, index) => {
-    attachPhotoClickListener(placeholder, index);
-});
+function deletePhoto(placeholder, index) {
+    if (confirm(`Hapus foto ${index + 1}?`)) {
+        localStorage.removeItem(`loveDeclaration_photo_${index}`);
+        placeholder.style.backgroundImage = 'none';
+        placeholder.innerHTML = `<span>📸 Foto ${index + 1}</span>`;
+        
+        // Re-init untuk foto ini saja
+        initializePhotos();
+    }
+}
 
-// Load photos saat DOM ready
+// Initialize photos saat DOM siap
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadPhotosFromStorage);
+    document.addEventListener('DOMContentLoaded', initializePhotos);
 } else {
-    loadPhotosFromStorage();
+    initializePhotos();
 }
 
 // ============================================
