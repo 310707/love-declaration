@@ -54,37 +54,107 @@ const volumeSlider = document.getElementById('volumeSlider');
 // Initialize audio settings
 if (audio) {
     audio.volume = 0.7; // Set default volume to 70%
+    audio.muted = false; // Ensure not muted on load
+    console.log('🎵 Audio element found:', audio);
     console.log('🔊 Audio initialized with volume:', audio.volume * 100 + '%');
+    console.log('📁 Audio src:', audio.src);
+    console.log('🔇 Audio muted status:', audio.muted);
+    
+    // Setup error handling
+    audio.addEventListener('error', (e) => {
+        console.error('❌ Audio error:', e.target.error);
+        console.error('Error code:', e.target.error.code);
+        console.error('Error message:', e.target.error.message);
+    });
+    
+    audio.addEventListener('canplay', () => {
+        console.log('✅ Audio ready to play');
+    });
+    
+    audio.addEventListener('play', () => {
+        console.log('▶️ Audio started playing');
+    });
+    
+    audio.addEventListener('pause', () => {
+        console.log('⏸️ Audio paused');
+    });
+}
+
+// Setup volume slider event
+if (volumeSlider) {
+    volumeSlider.addEventListener('mousedown', () => {
+        if (audio) {
+            audio.muted = false;
+            console.log('🔊 Volume slider clicked - unmuting');
+        }
+    });
+}
+
+// Setup play button click
+if (playBtn) {
+    playBtn.addEventListener('click', () => {
+        console.log('🎵 Play button clicked');
+    });
 }
 
 // Toggle music play/pause
 function toggleMusic() {
-    if (isPlaying) {
-        audio.pause();
-        playBtn.innerHTML = '<span class="play-icon">▶</span>';
-        playBtn.classList.remove('playing');
-        isPlaying = false;
-    } else {
-        // Pastikan audio tidak muted dan volume ada
-        audio.muted = false;
-        audio.volume = 0.7; // Set volume ke 70%
-        
-        audio.play().then(() => {
-            playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-            playBtn.classList.add('playing');
-            isPlaying = true;
-        }).catch((error) => {
-            console.log('Error playing audio:', error);
-            playDemoAudio();
-        });
+    if (!audio) {
+        console.error('❌ Audio element not found');
+        return;
+    }
+    
+    try {
+        if (isPlaying) {
+            audio.pause();
+            playBtn.innerHTML = '<span class="play-icon">▶</span>';
+            playBtn.classList.remove('playing');
+            isPlaying = false;
+            console.log('⏸️ Music paused');
+        } else {
+            // Pastikan tidak muted dan volume ada
+            audio.muted = false;
+            audio.volume = 0.7;
+            
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+                    playBtn.classList.add('playing');
+                    isPlaying = true;
+                    console.log('▶️ Music playing');
+                }).catch((error) => {
+                    console.log('❌ Play error:', error.message);
+                    playDemoAudio();
+                });
+            } else {
+                // Older browser yang tidak support Promise
+                playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+                playBtn.classList.add('playing');
+                isPlaying = true;
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error in toggleMusic:', error);
     }
 }
 
 // Change volume
 function changeVolume(value) {
-    audio.muted = false; // Ensure audio is not muted when user changes volume
+    if (!audio) return;
+    
+    // Force unmute saat volume diubah
+    audio.muted = false;
     audio.volume = value / 100;
-    console.log('🔊 Volume changed to:', Math.round(value) + '%');
+    
+    // Jika volume > 0 dan audio sedang paused, coba play
+    if (value > 0 && audio.paused && !isPlaying) {
+        console.log('🎵 Volume changed to:', Math.round(value) + '% - attempting to play');
+        audio.play().catch(err => console.log('Auto-play failed:', err));
+    } else {
+        console.log('🔊 Volume changed to:', Math.round(value) + '%');
+    }
 }
 
 // Update progress bar
@@ -690,3 +760,35 @@ function getCurrentPageHTML() {
 }
 
 console.log('💕 Love Declaration website loaded successfully! 💕');
+
+// Comprehensive debug info
+console.log('=== LOVE DECLARATION DEBUG INFO ===');
+console.log('Audio Element:', {
+    found: !!audio,
+    id: audio ? audio.id : 'N/A',
+    src: audio ? audio.src : 'N/A',
+    volume: audio ? audio.volume : 'N/A',
+    muted: audio ? audio.muted : 'N/A',
+    paused: audio ? audio.paused : 'N/A',
+    duration: audio ? audio.duration : 'N/A'
+});
+
+console.log('UI Elements:', {
+    playBtn: !!playBtn ? '✅' : '❌',
+    progress: !!progress ? '✅' : '❌',
+    volumeSlider: !!volumeSlider ? '✅' : '❌'
+});
+
+console.log('Music State:', {
+    isPlaying: isPlaying,
+    musicStarted: musicStarted
+});
+
+console.log('Tips untuk Debug:');
+console.log('1. Buka DevTools (F12) dan cek Console');
+console.log('2. Klik tombol Play (▶) di musik player');
+console.log('3. Cek apakah volume slider berfungsi');
+console.log('4. Jika masih tidak ada suara, cek:');
+console.log('   - Speaker device sudah unmuted?');
+console.log('   - Volume browser sudah di-set?');
+console.log('   - File musik ada di assets folder?');

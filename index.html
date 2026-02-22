@@ -120,7 +120,7 @@
                     </div>
                     <div class="volume-control">
                         <label>Volume:</label>
-                        <input type="range" id="volumeSlider" min="0" max="100" value="70" onchange="changeVolume(this.value)">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="70" onchange="changeVolume(this.value)" oninput="changeVolume(this.value)">
                     </div>
                 </div>
                 <div class="playlist">
@@ -192,7 +192,7 @@
 
     <!-- Audio Element (ganti src dengan musik favorit) -->
     <audio id="bgMusic" preload="auto" autoplay muted>
-        <source src="assets/Rio Clappy - Bunga Abadi (Official Lyric Video).mp3" type="audio/mpeg">
+        <source src="assets/bunga-abadi.mp3" type="audio/mpeg">
         Browser Anda tidak mendukung audio element.
     </audio>
 
