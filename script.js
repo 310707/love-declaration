@@ -26,69 +26,8 @@ function createHearts() {
 // Recreate hearts when window is resized
 window.addEventListener('resize', () => {
     document.querySelector('.floating-hearts').innerHTML = '';
-    async function exportDeklarasi() {
-        // Kumpulkan semua data foto
-        const deklarasiFotos = {};
-        let hasPhoto = false;
-        for (let i = 0; i < 4; i++) {
-            const foto = getPhoto(i);
-            if (foto) {
-                deklarasiFotos[i] = foto;
-                hasPhoto = true;
-            }
-        }
-
-        if (!hasPhoto) {
-            alert('⚠️ Tidak ada foto yang tersimpan. Tambahkan foto terlebih dahulu!');
-            return;
-        }
-
-        // Ambil CSS untuk embed (fallback kosong jika gagal)
-        let cssText = '';
-        try {
-            const resp = await fetch('style.css');
-            if (resp.ok) cssText = await resp.text();
-        } catch (e) {
-            console.warn('Tidak dapat mengambil style.css untuk embed:', e);
-        }
-
-        // Coba embed audio sebagai data URL jika memungkinkan
-        let audioDataUrl = '';
-        try {
-            if (audio && audio.src) {
-                const resp = await fetch(audio.src);
-                if (resp.ok) {
-                    const blob = await resp.blob();
-                    const reader = new FileReader();
-                    audioDataUrl = await new Promise((resolve) => {
-                        reader.onload = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                    });
-                }
-            }
-        } catch (e) {
-            console.warn('Gagal embed audio:', e);
-            audioDataUrl = audio ? audio.src : '';
-        }
-
-        // Buat HTML yang self-contained (embed CSS + script untuk me-load foto)
-        const htmlContent = `<!DOCTYPE html>\n<html lang="id">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Pernyataan Cinta Untukmu ❤️</title>\n    <style>${cssText}</style>\n    <script>\n        // Embedded photos data\n        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiFotos)};\n        const EMBEDDED_AUDIO = ${JSON.stringify(audioDataUrl)};\n\n        window.addEventListener('DOMContentLoaded', () => {\n            // Set photos langsung ke placeholder (jika ada)\n            try {\n                Object.keys(DEKLARASI_PHOTOS).forEach(key => {\n                    const index = parseInt(key);\n                    const photoData = DEKLARASI_PHOTOS[key];\n                    // simpan ke localStorage juga untuk konsistensi\n                    try { localStorage.setItem('loveDeclaration_photo_' + index, photoData); } catch(e){}\n                    const placeholder = document.querySelectorAll('.photo-placeholder')[index];\n                    if (placeholder) {\n                        placeholder.style.backgroundImage = 'url("' + photoData + '")';\n                        placeholder.style.backgroundSize = 'cover';\n                        placeholder.style.backgroundPosition = 'center';\n                        placeholder.innerHTML = '';\n                    }\n                });\n            } catch (e) { console.warn('Error restore photos:', e); }\n\n            // Set audio src jika embedded\n            try {\n                if (EMBEDDED_AUDIO) {\n                    const audioEl = document.getElementById('bgMusic');\n                    if (audioEl) {\n                        audioEl.src = EMBEDDED_AUDIO;\n                        // Try to play muted then unmute after user interaction\n                        audioEl.muted = true;\n                        audioEl.play().then(() => {\n                            setTimeout(() => { audioEl.muted = false; }, 800);\n                        }).catch(() => {\n                            // ignore\n                        });\n                    }\n                }\n            } catch (e) { console.warn('Error set audio:', e); }\n        });\n    </script>\n</head>\n<body>\n    ${getCurrentPageHTML()}\n</body>\n</html>`;
-
-        // Download file
-        const link = document.createElement('a');
-        link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
-        link.download = 'Deklarasi-Cinta-' + new Date().getTime() + '.html';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        alert('✅ Deklarasi berhasil di-unduh! File include semua foto dan (jika memungkinkan) audio embedded.');
-    }
-            audio.muted = false;
-            console.log('🔊 Volume slider clicked - unmuting');
-        }
-    });
-}
+    createHearts();
+});
 
 // Setup play button click
 if (playBtn) {
@@ -129,115 +68,128 @@ function toggleMusic() {
                     playDemoAudio();
                 });
             } else {
-                // Older browser yang tidak support Promise
-                playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-                playBtn.classList.add('playing');
-                isPlaying = true;
-            }
-        }
-    } catch (error) {
-        console.error('❌ Error in toggleMusic:', error);
-    }
-}
+                async function exportDeklarasi() {
+                    // Kumpulkan foto
+                    const deklarasiFotos = {};
+                    let hasPhoto = false;
+                    const placeholders = document.querySelectorAll('.photo-placeholder');
+                    for (let i = 0; i < placeholders.length; i++) {
+                        const foto = getPhoto(i);
+                        if (foto) {
+                            deklarasiFotos[i] = foto;
+                            hasPhoto = true;
+                        }
+                    }
 
-// Change volume
-function changeVolume(value) {
-    if (!audio) return;
-    
-    // Force unmute saat volume diubah
-    audio.muted = false;
-    audio.volume = value / 100;
-    
-    // Jika volume > 0 dan audio sedang paused, coba play
-    if (value > 0 && audio.paused && !isPlaying) {
-        console.log('🎵 Volume changed to:', Math.round(value) + '% - attempting to play');
-        audio.play().catch(err => console.log('Auto-play failed:', err));
-    } else {
-        console.log('🔊 Volume changed to:', Math.round(value) + '%');
-    }
-}
+                    if (!hasPhoto) {
+                        alert('⚠️ Tidak ada foto yang tersimpan. Tambahkan foto terlebih dahulu!');
+                        return;
+                    }
 
-// Update progress bar
-audio.addEventListener('timeupdate', () => {
-    if (audio.duration) {
-        const progressPercent = (audio.currentTime / audio.duration) * 100;
-        progress.style.width = progressPercent + '%';
-    }
-});
+                    // Ambil CSS utama via fetch terlebih dahulu (lebih andal)
+                    let cssText = '';
+                    try {
+                        const r = await fetch('style.css');
+                        if (r.ok) cssText = await r.text();
+                    } catch (e) {
+                        console.warn('Gagal fetch style.css:', e);
+                    }
 
-// Reset when song ends
-audio.addEventListener('ended', () => {
-    playBtn.innerHTML = '<span class="play-icon">▶</span>';
-    playBtn.classList.remove('playing');
-    isPlaying = false;
-});
+                    // Jika kosong, coba kumpulkan dari document.styleSheets
+                    if (!cssText) {
+                        try {
+                            for (let i = 0; i < document.styleSheets.length; i++) {
+                                const sheet = document.styleSheets[i];
+                                try {
+                                    const rules = sheet.cssRules || sheet.rules;
+                                    for (let j = 0; j < rules.length; j++) cssText += rules[j].cssText + '\n';
+                                } catch (e) {
+                                    // cross-origin ignore
+                                }
+                            }
+                        } catch (e) { console.warn('Gagal kumpulkan CSS dari styleSheets:', e); }
+                    }
 
-// Click on progress bar to seek
-document.querySelector('.progress-bar').addEventListener('click', (e) => {
-    if (audio.src && !audio.src.includes('bunga-abadi')) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const percent = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = percent * audio.duration;
-    }
-});
+                    // Ambil script.js untuk embed agar exported file berfungsi sama
+                    let scriptText = '';
+                    try {
+                        const r = await fetch('script.js');
+                        if (r.ok) scriptText = await r.text();
+                    } catch (e) { console.warn('Gagal fetch script.js:', e); }
 
-// ============================================
-// DEMO AUDIO FUNCTION (untuk testing)
-// ============================================
-function playDemoAudio() {
-    // Ini adalah fungsi demo yang memberikan feedback visual
-    playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-    playBtn.classList.add('playing');
-    isPlaying = true;
+                    // Embed audio sebagai data URL jika memungkinkan
+                    let audioDataUrl = '';
+                    try {
+                        const src = audio ? (audio.currentSrc || audio.src) : '';
+                        if (src) {
+                            const r = await fetch(src);
+                            if (r.ok) {
+                                const blob = await r.blob();
+                                const reader = new FileReader();
+                                audioDataUrl = await new Promise((resolve) => {
+                                    reader.onload = () => resolve(reader.result);
+                                    reader.readAsDataURL(blob);
+                                });
+                            }
+                        }
+                    } catch (e) { console.warn('Gagal embed audio:', e); audioDataUrl = audio ? (audio.currentSrc || audio.src) : ''; }
 
-    // Simulasi progress bar movement
-    let fakeTime = 0;
-    const fakeInterval = setInterval(() => {
-        fakeTime += 0.1;
-        progress.style.width = (fakeTime % 100) + '%';
-        
-        if (!isPlaying) {
-            clearInterval(fakeInterval);
-            progress.style.width = '0%';
-        }
-    }, 100);
+                    // Build standalone HTML: inline CSS + body + JS that restores photos + inline script.js
+                    const restoreScript = `
+                        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiFotos)};
+                        const EMBEDDED_AUDIO = ${JSON.stringify(audioDataUrl)};
+                        window.addEventListener('DOMContentLoaded', () => {
+                            try {
+                                Object.keys(DEKLARASI_PHOTOS).forEach(key => {
+                                    const index = parseInt(key);
+                                    const photoData = DEKLARASI_PHOTOS[key];
+                                    try { localStorage.setItem('loveDeclaration_photo_' + index, photoData); } catch(e){}
+                                    const placeholder = document.querySelectorAll('.photo-placeholder')[index];
+                                    if (placeholder) {
+                                        placeholder.style.backgroundImage = 'url("' + photoData + '")';
+                                        placeholder.style.backgroundSize = 'cover';
+                                        placeholder.style.backgroundPosition = 'center';
+                                        placeholder.innerHTML = '';
+                                    }
+                                });
+                            } catch(e) { console.warn('Error restore photos:', e); }
+                            try {
+                                if (EMBEDDED_AUDIO) {
+                                    const audioEl = document.getElementById('bgMusic');
+                                    if (audioEl) {
+                                        audioEl.src = EMBEDDED_AUDIO;
+                                        audioEl.muted = true;
+                                        audioEl.play().then(()=>{ setTimeout(()=>{ audioEl.muted = false; }, 800); }).catch(()=>{});
+                                    }
+                                }
+                            } catch(e) { console.warn('Error set audio:', e); }
+                        });
+                    `;
 
-    // Auto stop after 30 seconds
-    setTimeout(() => {
-        if (isPlaying) {
-            toggleMusic();
-        }
-    }, 30000);
-}
+                    const htmlContent = `<!doctype html>
+                <html lang="id">
+                <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <title>Pernyataan Cinta Untukmu ❤️</title>
+                <style>${cssText}</style>
+                </head>
+                <body>
+                ${getCurrentPageHTML()}
+                <script>${restoreScript}</script>
+                ${scriptText ? `<script>${scriptText}</script>` : ''}
+                </body>
+                </html>`;
 
-// ============================================
-// PHOTO UPLOAD & STORAGE FUNCTIONALITY
-// ============================================
+                    const link = document.createElement('a');
+                    link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+                    link.download = 'Deklarasi-Cinta-' + Date.now() + '.html';
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
 
-// Check if localStorage is available
-function isLocalStorageAvailable() {
-    try {
-        const test = '__localStorage_test__';
-        localStorage.setItem(test, test);
-        localStorage.removeItem(test);
-        return true;
-    } catch(e) {
-        console.warn('⚠️ localStorage tidak tersedia');
-        return false;
-    }
-}
-
-// Store photos in memory jika localStorage tidak available
-let photoStorage = {};
-const useLocalStorage = isLocalStorageAvailable();
-
-function getPhoto(index) {
-    const key = `loveDeclaration_photo_${index}`;
-    if (useLocalStorage) {
-        return localStorage.getItem(key);
-    } else {
-        return photoStorage[key];
-    }
+                    alert('✅ Deklarasi berhasil di-unduh! File include semua foto, style, dan script.');
+                }
 }
 
 function setPhoto(index, data) {
@@ -649,63 +601,125 @@ if (document.readyState === 'loading') {
 // EXPORT & IMPORT DEKLARASI
 // ============================================
 
-function exportDeklarasi() {
+async function exportDeklarasi() {
     // Kumpulkan semua data foto
-    const deklarasiData = {
-        timestamp: new Date().toISOString(),
-        fotos: {}
-    };
-    
-    // Ambil semua foto dari storage
+    const deklarasiFotos = {};
     let hasPhoto = false;
     for (let i = 0; i < 4; i++) {
         const foto = getPhoto(i);
         if (foto) {
-            deklarasiData.fotos[i] = foto;
+            deklarasiFotos[i] = foto;
             hasPhoto = true;
         }
     }
-    
+
     if (!hasPhoto) {
         alert('⚠️ Tidak ada foto yang tersimpan. Tambahkan foto terlebih dahulu!');
         return;
     }
-    
-    // Create HTML file dengan data embedded
+
+    // Kumpulkan CSS dari dokumen (lebih andal daripada fetch di beberapa environment)
+    let cssText = '';
+    try {
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            const sheet = document.styleSheets[i];
+            try {
+                if (!sheet.href || sheet.href.indexOf(location.origin) === 0 || sheet.ownerNode && sheet.ownerNode.tagName === 'STYLE') {
+                    const rules = sheet.cssRules || sheet.rules;
+                    for (let j = 0; j < rules.length; j++) {
+                        cssText += rules[j].cssText + '\n';
+                    }
+                }
+            } catch (e) {
+                // ignore cross-origin stylesheets
+            }
+        }
+    } catch (e) {
+        console.warn('Gagal mengumpulkan CSS dari document.styleSheets:', e);
+    }
+
+    // Jika cssText kosong, coba fetch style.css sebagai fallback
+    if (!cssText) {
+        try {
+            const resp = await fetch('style.css');
+            if (resp.ok) cssText = await resp.text();
+        } catch (e) {
+            console.warn('Gagal fetch style.css:', e);
+        }
+    }
+
+    // Coba embed audio sebagai data URL jika memungkinkan
+    let audioDataUrl = '';
+    try {
+        if (audio && audio.currentSrc) {
+            const resp = await fetch(audio.currentSrc);
+            if (resp.ok) {
+                const blob = await resp.blob();
+                const reader = new FileReader();
+                audioDataUrl = await new Promise((resolve) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+            }
+        }
+    } catch (e) {
+        console.warn('Gagal embed audio:', e);
+        audioDataUrl = audio ? (audio.currentSrc || audio.src) : '';
+    }
+
+    // Build standalone HTML
     const htmlContent = `<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pernyataan Cinta Untukmu ❤️</title>
-    <link rel="stylesheet" href="style.css">
+    <style>${cssText.replace(/<\/style>/g, '<\\/style>')}</style>
     <script>
-        // Data deklarasi embedded dalam file ini
-        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiData.fotos)};
-        
-        // Load foto saat page load
-        window.addEventListener('load', () => {
-            for (const index in DEKLARASI_PHOTOS) {
-                localStorage.setItem('loveDeclaration_photo_' + index, DEKLARASI_PHOTOS[index]);
-            }
-            console.log('✅ Foto berhasil di-load dari file deklarasi!');
+        const DEKLARASI_PHOTOS = ${JSON.stringify(deklarasiFotos)};
+        const EMBEDDED_AUDIO = ${JSON.stringify(audioDataUrl)};
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                Object.keys(DEKLARASI_PHOTOS).forEach(key => {
+                    const index = parseInt(key);
+                    const photoData = DEKLARASI_PHOTOS[key];
+                    try { localStorage.setItem('loveDeclaration_photo_' + index, photoData); } catch(e){}
+                    const placeholder = document.querySelectorAll('.photo-placeholder')[index];
+                    if (placeholder) {
+                        placeholder.style.backgroundImage = 'url("' + photoData + '")';
+                        placeholder.style.backgroundSize = 'cover';
+                        placeholder.style.backgroundPosition = 'center';
+                        placeholder.innerHTML = '';
+                    }
+                });
+            } catch (e) { console.warn('Error restore photos:', e); }
+
+            try {
+                if (EMBEDDED_AUDIO) {
+                    const audioEl = document.getElementById('bgMusic');
+                    if (audioEl) {
+                        audioEl.src = EMBEDDED_AUDIO;
+                        audioEl.muted = true;
+                        audioEl.play().then(() => { setTimeout(() => { audioEl.muted = false; }, 800); }).catch(()=>{});
+                    }
+                }
+            } catch (e) { console.warn('Error set audio:', e); }
         });
     </script>
 </head>
 <body>
-    ${getCurrentPageHTML()}
+${getCurrentPageHTML()}
 </body>
 </html>`;
-    
-    // Download file
+
     const link = document.createElement('a');
     link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
     link.download = 'Deklarasi-Cinta-' + new Date().getTime() + '.html';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    alert('✅ Deklarasi berhasil di-unduh!\\n\\nFile include semua foto. Bagikan ke orang terkasih - saat mereka buka file, foto-foto akan otomatis muncul!');
+
+    alert('✅ Deklarasi berhasil di-unduh! File include semua foto dan style.');
 }
 
 function importDeklarasi(event) {
