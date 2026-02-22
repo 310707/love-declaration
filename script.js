@@ -51,6 +51,12 @@ const playBtn = document.getElementById('playBtn');
 const progress = document.getElementById('progress');
 const volumeSlider = document.getElementById('volumeSlider');
 
+// Initialize audio settings
+if (audio) {
+    audio.volume = 0.7; // Set default volume to 70%
+    console.log('🔊 Audio initialized with volume:', audio.volume * 100 + '%');
+}
+
 // Toggle music play/pause
 function toggleMusic() {
     if (isPlaying) {
@@ -59,19 +65,26 @@ function toggleMusic() {
         playBtn.classList.remove('playing');
         isPlaying = false;
     } else {
-        audio.play().catch(() => {
-            // Fallback jika URL tidak valid
+        // Pastikan audio tidak muted dan volume ada
+        audio.muted = false;
+        audio.volume = 0.7; // Set volume ke 70%
+        
+        audio.play().then(() => {
+            playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+            playBtn.classList.add('playing');
+            isPlaying = true;
+        }).catch((error) => {
+            console.log('Error playing audio:', error);
             playDemoAudio();
         });
-        playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-        playBtn.classList.add('playing');
-        isPlaying = true;
     }
 }
 
 // Change volume
 function changeVolume(value) {
+    audio.muted = false; // Ensure audio is not muted when user changes volume
     audio.volume = value / 100;
+    console.log('🔊 Volume changed to:', Math.round(value) + '%');
 }
 
 // Update progress bar
@@ -500,12 +513,18 @@ function startAutoPlay() {
     }
     
     console.log('🎵 Memulai autoplay musik...');
+    console.log('Audio src:', audio.src);
+    console.log('Audio muted:', audio.muted);
+    
+    // Set volume
+    audio.volume = 0.7;
     audio.muted = true;
     
     const playPromise = audio.play();
     
     if (playPromise !== undefined) {
         playPromise.then(() => {
+            console.log('✅ Play berhasil dimulai');
             isPlaying = true;
             playBtn.innerHTML = '<span class="play-icon">⏸</span>';
             playBtn.classList.add('playing');
@@ -514,21 +533,28 @@ function startAutoPlay() {
             // Unmute music setelah play berhasil
             setTimeout(() => {
                 audio.muted = false;
-                console.log('✅ Musik berhasil dimulai dan tidak di-mute!');
-            }, 1000);
+                console.log('✅ Audio unmuted - musik seharusnya terdengar!');
+                console.log('Volume:', audio.volume);
+            }, 800);
         }).catch((error) => {
             console.log('ℹ️ Autoplay musik dibatasi browser, tunggu user interaksi...');
+            console.log('Error detail:', error.message);
+            
             // Fallback: tunggu user click untuk play
             const handleUserInteraction = () => {
                 if (!musicStarted && audio.src) {
+                    console.log('🎵 User click detected - playing musik...');
                     audio.muted = false;
+                    audio.volume = 0.7;
                     audio.play().then(() => {
                         isPlaying = true;
                         playBtn.innerHTML = '<span class="play-icon">⏸</span>';
                         playBtn.classList.add('playing');
                         musicStarted = true;
                         console.log('✅ Musik dimulai setelah user interaksi!');
-                    }).catch((e) => console.log('Error:', e));
+                    }).catch((e) => {
+                        console.log('❌ Error play:', e.message);
+                    });
                 }
                 document.removeEventListener('click', handleUserInteraction);
                 document.removeEventListener('touchstart', handleUserInteraction);
