@@ -339,28 +339,52 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // ============================================
-// AUTOPLAY MUSIC - FIRST USER INTERACTION
+// AUTOPLAY MUSIC - PAGE LOAD
 // ============================================
 let musicStarted = false;
 
-function autoPlayMusic() {
-    if (!musicStarted && audio.src) {
-        audio.play().then(() => {
-            isPlaying = true;
-            playBtn.innerHTML = '<span class="play-icon">⏸</span>';
-            playBtn.classList.add('playing');
-            musicStarted = true;
-        }).catch(() => {
-            console.log('Autoplay musik tidak didukung browser');
-        });
-        // Hapus listener setelah pertama kali dijalankan
-        document.removeEventListener('click', autoPlayMusic);
-        document.removeEventListener('touchstart', autoPlayMusic);
+function startAutoPlay() {
+    if (audio && audio.src && !musicStarted) {
+        // Coba play dengan muted dulu (dijamin berhasil di modern browser)
+        audio.muted = true;
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                isPlaying = true;
+                playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+                playBtn.classList.add('playing');
+                musicStarted = true;
+                
+                // Unmute music setelah play berhasil
+                setTimeout(() => {
+                    audio.muted = false;
+                    console.log('🎵 Musik dimulai!');
+                }, 500);
+            }).catch((error) => {
+                console.log('Info: Autoplay terbatas - musik mulai saat user klik');
+                // Fallback: tunggu user click untuk unmute
+                document.addEventListener('click', unmuteMusic, { once: true });
+                document.addEventListener('touchstart', unmuteMusic, { once: true });
+            });
+        }
     }
 }
 
-// Trigger autoplay on first user interaction
-document.addEventListener('click', autoPlayMusic, { once: true });
-document.addEventListener('touchstart', autoPlayMusic, { once: true });
+function unmuteMusic() {
+    if (audio && !isPlaying && musicStarted) {
+        audio.muted = false;
+        isPlaying = true;
+        playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+        playBtn.classList.add('playing');
+    }
+}
+
+// Jalankan autoplay saat DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startAutoPlay);
+} else {
+    startAutoPlay();
+}
 
 console.log('💕 Love Declaration website loaded successfully! 💕');
