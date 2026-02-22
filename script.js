@@ -338,4 +338,29 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// ============================================
+// AUTOPLAY MUSIC - FIRST USER INTERACTION
+// ============================================
+let musicStarted = false;
+
+function autoPlayMusic() {
+    if (!musicStarted && audio.src) {
+        audio.play().then(() => {
+            isPlaying = true;
+            playBtn.innerHTML = '<span class="play-icon">⏸</span>';
+            playBtn.classList.add('playing');
+            musicStarted = true;
+        }).catch(() => {
+            console.log('Autoplay musik tidak didukung browser');
+        });
+        // Hapus listener setelah pertama kali dijalankan
+        document.removeEventListener('click', autoPlayMusic);
+        document.removeEventListener('touchstart', autoPlayMusic);
+    }
+}
+
+// Trigger autoplay on first user interaction
+document.addEventListener('click', autoPlayMusic, { once: true });
+document.addEventListener('touchstart', autoPlayMusic, { once: true });
+
 console.log('💕 Love Declaration website loaded successfully! 💕');
